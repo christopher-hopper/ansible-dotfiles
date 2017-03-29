@@ -1,0 +1,3 @@
+---
+dotfiles_user: "root"
+dotfiles_home_path: "{{ (dofiles_user == 'root') | ternary('/', '/home/') }}{{ dotfiles_user }}"

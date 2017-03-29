@@ -1,0 +1,30 @@
+---
+- name: Install Bash Completion.
+  package:
+    name: bash-completion
+    state: latest
+
+- name: Check Bash dotfiles.
+  stat:
+    path: "{{ dotfiles_home_path }}/.dotfiles"
+  register: dotfiles
+
+- name: Download Bash dotfiles.
+  git:
+    repo: "https://github.com/christopher-hopper/dotfiles.git"
+    dest: "{{ dotfiles_home_path }}/.dotfiles"
+    accept_hostkey: yes
+    recursive: yes
+  become: yes
+  become_user: "{{ dofiles_user }}"
+  when: "not dotfiles.stat.exists"
+  register: clone
+
+- name: Install Bash dotfiles.
+  shell: "{{ dotfiles_home_path }}/.dotfiles/install.sh >> installer.log"
+  args:
+    chdir: "{{ dotfiles_home_path }}/.dotfiles"
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ dotfiles_user }}"
+  when: "clone.changed is defined and clone.changed"
